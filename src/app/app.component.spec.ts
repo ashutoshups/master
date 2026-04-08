@@ -20,6 +20,28 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('my-app');
   });
 
+  it('should have registration as default active tab', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.activeTab).toEqual('registration');
+  });
+
+  it('should switch to users tab when setActiveTab is called', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    app.setActiveTab('users');
+    expect(app.activeTab).toEqual('users');
+  });
+
+  it('should switch back to registration tab when setActiveTab is called', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    app.setActiveTab('users');
+    expect(app.activeTab).toEqual('users');
+    app.setActiveTab('registration');
+    expect(app.activeTab).toEqual('registration');
+  });
+
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();

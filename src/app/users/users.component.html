@@ -1,0 +1,92 @@
+<div class="page-shell bg-light min-vh-100 py-5">
+  <div class="container px-3 px-md-5">
+    <div class="row justify-content-center">
+      <div class="col-xl-8 col-lg-10">
+        <div class="card border-0 shadow-lg overflow-hidden">
+          <div class="row g-0 align-items-stretch">
+            <div class="col-lg-5 bg-success text-white p-5 d-flex flex-column justify-content-center">
+              <div class="mb-4">
+                <span class="badge custom-badge bg-white bg-opacity-10 text-uppercase fw-semibold mb-3">User Directory</span>
+                <h2 class="fw-bold">Registered Users</h2>
+              </div>
+              <p class="mb-0 text-white-75">View all users who have successfully registered with our system.</p>
+            </div>
+            <div class="col-lg-7 p-5">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                  <h5 class="mb-1">User Management</h5>
+                  <p class="text-muted mb-0">{{ users.length }} user{{ users.length !== 1 ? 's' : '' }} registered</p>
+                </div>
+                <button
+                  *ngIf="users.length > 0"
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  (click)="clearAllUsers()">
+                  <svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                  </svg>
+                  Clear All
+                </button>
+              </div>
+
+              <div *ngIf="users.length === 0" class="text-center py-5">
+                <div class="mb-3">
+                  <svg width="64" height="64" fill="currentColor" class="text-muted" viewBox="0 0 16 16">
+                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1z"/>
+                  </svg>
+                </div>
+                <h5 class="text-muted">No users registered yet</h5>
+                <p class="text-muted">Users will appear here after successful registration.</p>
+              </div>
+
+              <div *ngIf="users.length > 0">
+                <div class="row g-3">
+                  <div *ngFor="let user of users; let i = index" class="col-12">
+                    <div class="card border rounded-3 shadow-sm">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div>
+                            <h6 class="card-title mb-0">{{ user.firstName }} {{ user.lastName }}</h6>
+                            <small class="text-muted">{{ user.email }}</small>
+                          </div>
+                          <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-icon" aria-label="Delete user" (click)="removeUser(i)">
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                              </svg>
+                            </button>
+                            <span class="badge bg-primary">#{{ i + 1 }}</span>
+                          </div>
+                        </div>
+                        <div class="row g-2">
+                          <div class="col-sm-6">
+                            <small class="text-muted d-block">Email</small>
+                            <span class="fw-medium">{{ user.email }}</span>
+                          </div>
+                          <div class="col-sm-6">
+                            <small class="text-muted d-block">Phone</small>
+                            <span class="fw-medium">{{ user.phone }}</span>
+                          </div>
+                          <div class="col-sm-6">
+                            <small class="text-muted d-block">Date of Birth</small>
+                            <span class="fw-medium">{{ user.dob | date:'mediumDate' }}</span>
+                          </div>
+                          <div class="col-sm-6">
+                            <small class="text-muted d-block">Country</small>
+                            <span class="fw-medium">{{ user.country }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
