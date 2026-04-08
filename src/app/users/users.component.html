@@ -12,17 +12,18 @@
               <p class="mb-0 text-white-75">View all users who have successfully registered with our system.</p>
             </div>
             <div class="col-lg-7 p-5">
-              <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                  <h5 class="mb-1">User Management</h5>
-                  <p class="text-muted mb-0">{{ users.length }} user{{ users.length !== 1 ? 's' : '' }} registered</p>
-                </div>
-                <button
-                  *ngIf="users.length > 0"
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  (click)="clearAllUsers()">
-                  <svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+              <ng-container *ngIf="users$ | async as users">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <div>
+                    <h5 class="mb-1">User Management</h5>
+                    <p class="text-muted mb-0">{{ users.length }} user{{ users.length !== 1 ? 's' : '' }} registered</p>
+                  </div>
+                  <button
+                    *ngIf="users.length > 0"
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    (click)="clearAllUsers()">
+                    <svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
                   </svg>
@@ -42,7 +43,7 @@
 
               <div *ngIf="users.length > 0">
                 <div class="row g-3">
-                  <div *ngFor="let user of users; let i = index" class="col-12">
+                  <div *ngFor="let user of users; let i = index; trackBy: trackByUser" class="col-12">
                     <div class="card border rounded-3 shadow-sm">
                       <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
@@ -51,6 +52,11 @@
                             <small class="text-muted">{{ user.email }}</small>
                           </div>
                           <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm btn-icon btn-edit" aria-label="Edit user" (click)="startEdit(i, user)">
+                              <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706l-1.439 1.44-2.122-2.12 1.44-1.44a.5.5 0 0 1 .706 0l1.415 1.414zM1 13.5V16h2.5l7.381-7.38-2.12-2.122L1 13.5z"/>
+                              </svg>
+                            </button>
                             <button type="button" class="btn btn-outline-danger btn-sm btn-icon" aria-label="Delete user" (click)="removeUser(i)">
                               <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -78,11 +84,47 @@
                             <span class="fw-medium">{{ user.country }}</span>
                           </div>
                         </div>
+
+                        <div *ngIf="editingIndex === i && editingUser as currentUser" class="edit-panel mt-3 p-3 rounded-3 border bg-light">
+                          <h6 class="mb-3">Edit user</h6>
+                          <div class="row g-2">
+                            <div class="col-sm-6">
+                              <input type="text" [(ngModel)]="currentUser.firstName" name="editFirstName{{ i }}" class="form-control form-control-sm" placeholder="First name" />
+                            </div>
+                            <div class="col-sm-6">
+                              <input type="text" [(ngModel)]="currentUser.lastName" name="editLastName{{ i }}" class="form-control form-control-sm" placeholder="Last name" />
+                            </div>
+                            <div class="col-sm-6">
+                              <input type="email" [(ngModel)]="currentUser.email" name="editEmail{{ i }}" class="form-control form-control-sm" placeholder="Email" />
+                            </div>
+                            <div class="col-sm-6">
+                              <input type="tel" [(ngModel)]="currentUser.phone" name="editPhone{{ i }}" class="form-control form-control-sm" placeholder="Phone" />
+                            </div>
+                            <div class="col-sm-6">
+                              <input type="date" [(ngModel)]="currentUser.dob" name="editDob{{ i }}" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-sm-6">
+                              <select [(ngModel)]="currentUser.country" name="editCountry{{ i }}" class="form-select form-select-sm">
+                                <option value="" disabled>Select country</option>
+                                <option value="United States">United States</option>
+                                <option value="Canada">Canada</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Other">Other</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
+                            <button type="button" class="btn btn-primary btn-sm" (click)="saveEdit(i)">Save</button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              </ng-container>
             </div>
           </div>
         </div>

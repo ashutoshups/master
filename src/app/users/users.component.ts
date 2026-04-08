@@ -1,23 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { UserService, User } from '../services/user.service';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
-export class UsersComponent implements OnInit {
-  users: User[] = [];
+export class UsersComponent {
+  users$!: Observable<User[]>;
+  editingIndex: number | null = null;
+  editingUser: User | null = null;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {
+    this.users$ = this.userService.users$;
+  }
 
-  ngOnInit(): void {
-    this.userService.getUsers().subscribe(users => {
-      this.users = users;
-    });
+  startEdit(index: number, user: User): void {
+    this.editingIndex = index;
+    this.editingUser = { ...user };
+  }
+
+  saveEdit(index: number): void {
+    if (!this.editingUser) {
+      return;
+    }
+
+    this.userService.updateUser(index, this.editingUser);
+    this.cancelEdit();
+  }
+
+  cancelEdit(): void {
+    this.editingIndex = null;
+    this.editingUser = null;
   }
 
   clearAllUsers(): void {
@@ -30,5 +50,9 @@ export class UsersComponent implements OnInit {
     if (confirm('Delete this user? This action cannot be undone.')) {
       this.userService.removeUser(index);
     }
+  }
+
+  trackByUser(index: number, user: User): string {
+    return user.email;
   }
 }

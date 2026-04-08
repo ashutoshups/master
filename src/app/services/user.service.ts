@@ -57,8 +57,8 @@ export class UserService {
   }
 
   addUser(user: User): void {
-    this.users.push(user);
-    this.usersSubject.next([...this.users]);
+    this.users = [...this.users, user];
+    this.usersSubject.next(this.users);
     this.saveUsersToStorage();
   }
 
@@ -72,7 +72,7 @@ export class UserService {
 
   clearAllUsers(): void {
     this.users = [];
-    this.usersSubject.next([]);
+    this.usersSubject.next(this.users);
 
     if (this.isBrowserStorageAvailable()) {
       window.localStorage.removeItem(this.STORAGE_KEY);
@@ -84,8 +84,18 @@ export class UserService {
       return;
     }
 
-    this.users.splice(index, 1);
-    this.usersSubject.next([...this.users]);
+    this.users = this.users.filter((_, i) => i !== index);
+    this.usersSubject.next(this.users);
+    this.saveUsersToStorage();
+  }
+
+  updateUser(index: number, user: User): void {
+    if (index < 0 || index >= this.users.length) {
+      return;
+    }
+
+    this.users = this.users.map((existing, i) => (i === index ? { ...user } : existing));
+    this.usersSubject.next(this.users);
     this.saveUsersToStorage();
   }
 }

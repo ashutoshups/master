@@ -46,17 +46,25 @@ html {
 }
 
 .btn-icon:hover {
-  background-color: #c82333;
+  filter: brightness(0.95);
+}
+
+.btn-icon.btn-edit {
+  background-color: #fd7e14;
+}
+
+.btn-icon.btn-edit:hover {
+  background-color: #e67705;
 }
 
 .btn-icon svg {
   width: 12px;
   height: 12px;
-  margin-left: 4px;
+  margin: 0;
 }
 
 .card-body .btn-outline-danger {
-  min-width: 40px;
+  min-width: 34px;
 }
 
 .card-body .btn-outline-danger svg {

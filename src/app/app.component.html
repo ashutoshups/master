@@ -6,9 +6,13 @@
         <button
           class="nav-link"
           [class.active]="activeTab === 'registration'"
+          [attr.aria-selected]="activeTab === 'registration'"
+          [attr.aria-controls]="'registration-tab'"
+          id="registration-tab-button"
           (click)="setActiveTab('registration')"
           type="button"
-          role="tab">
+          role="tab"
+          tabindex="0">
           <div class="tab-content-wrapper">
             <svg width="20" height="20" fill="currentColor" class="tab-icon" viewBox="0 0 16 16">
               <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
@@ -28,9 +32,13 @@
         <button
           class="nav-link"
           [class.active]="activeTab === 'users'"
+          [attr.aria-selected]="activeTab === 'users'"
+          [attr.aria-controls]="'users-tab'"
+          id="users-tab-button"
           (click)="setActiveTab('users')"
           type="button"
-          role="tab">
+          role="tab"
+          tabindex="0">
           <div class="tab-content-wrapper">
             <svg width="20" height="20" fill="currentColor" class="tab-icon" viewBox="0 0 16 16">
               <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
@@ -51,10 +59,10 @@
   </div>
 
   <div class="tab-content">
-    <div class="tab-pane tab-panel" [hidden]="activeTab !== 'registration'" [class.active]="activeTab === 'registration'" role="tabpanel">
+    <div class="tab-pane tab-panel" id="registration-tab" aria-labelledby="registration-tab-button" [hidden]="activeTab !== 'registration'" [class.active]="activeTab === 'registration'" role="tabpanel">
       <app-registration></app-registration>
     </div>
-    <div class="tab-pane tab-panel" [hidden]="activeTab !== 'users'" [class.active]="activeTab === 'users'" role="tabpanel">
+    <div class="tab-pane tab-panel" id="users-tab" aria-labelledby="users-tab-button" [hidden]="activeTab !== 'users'" [class.active]="activeTab === 'users'" role="tabpanel">
       <app-users></app-users>
     </div>
   </div>
