@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { UserService, User } from '../services/user.service';
 import { FormErrorComponent } from '../shared/form-error/form-error.component';
+import { S3UploadService } from '../services/s3-upload.service';
 
 type RegistrationFormModel = {
   profilePhoto: FormControl<File | null>;
@@ -28,14 +29,18 @@ export class RegistrationComponent {
 
   registrationForm: FormGroup<RegistrationFormModel>;
   submitted = false;
-  photoPreviewUrl: string | null = null;
-  isSubmitting = false;
+  photoPreviewUrl = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   get f(): RegistrationFormModel {
     return this.registrationForm.controls;
   }
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private s3UploadService: S3UploadService
+  ) {
     this.registrationForm = this.fb.nonNullable.group(
       {
         profilePhoto: new FormControl<File | null>(null),
@@ -59,7 +64,7 @@ export class RegistrationComponent {
     return password !== confirmPassword ? { passwordMismatch: true } : null;
   }
 
-  onSubmit() {
+  async onSubmit() {
     this.submitted = true;
 
     this.registrationForm.markAllAsTouched();
@@ -71,26 +76,43 @@ export class RegistrationComponent {
     }
 
     if (this.registrationForm.valid) {
-      this.isSubmitting = true;
-      const { firstName, lastName, email, phone, dob } = this.registrationForm.getRawValue();
-      const payload: User = {
-        profilePhotoUrl: this.photoPreviewUrl,
-        firstName,
-        lastName,
-        email,
-        phone,
-        dob
-      };
+      this.isSubmitting.set(true);
+      try {
+        const { firstName, lastName, email, phone, dob, profilePhoto } = this.registrationForm.getRawValue();
 
-      // Add user to service
-      this.userService.addUser(payload);
+        let profilePhotoUrl: string | null = this.photoPreviewUrl();
+        let profilePhotoKey: string | null = null;
 
-      console.log('Registration submitted', payload);
-      alert('Registration successful!');
-      this.registrationForm.reset();
-      this.photoPreviewUrl = null;
-      this.submitted = false;
-      this.isSubmitting = false;
+        if (profilePhoto) {
+          const uploaded = await this.s3UploadService.uploadProfilePhoto(profilePhoto);
+          profilePhotoUrl = uploaded.url;
+          profilePhotoKey = uploaded.key;
+        }
+
+        const payload: User = {
+          profilePhotoUrl,
+          profilePhotoKey,
+          firstName,
+          lastName,
+          email,
+          phone,
+          dob
+        };
+
+        // Add user to service
+        this.userService.addUser(payload);
+
+        console.log('Registration submitted', payload);
+        alert('Registration successful!');
+        this.registrationForm.reset();
+        this.photoPreviewUrl.set(null);
+        this.submitted = false;
+      } catch (e) {
+        console.error(e);
+        alert('Photo upload failed. Please try again.');
+      } finally {
+        this.isSubmitting.set(false);
+      }
     }
   }
 
@@ -101,18 +123,18 @@ export class RegistrationComponent {
     this.registrationForm.get('profilePhoto')?.markAsDirty();
 
     if (!file) {
-      this.photoPreviewUrl = null;
+      this.photoPreviewUrl.set(null);
       return;
     }
 
     if (!file.type.startsWith('image/')) {
-      this.photoPreviewUrl = null;
+      this.photoPreviewUrl.set(null);
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
-      this.photoPreviewUrl = typeof reader.result === 'string' ? reader.result : null;
+      this.photoPreviewUrl.set(typeof reader.result === 'string' ? reader.result : null);
     };
     reader.readAsDataURL(file);
   }

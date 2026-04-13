@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface User {
   profilePhotoUrl?: string | null;
+  profilePhotoKey?: string | null;
   firstName: string;
   lastName: string;
   email: string;

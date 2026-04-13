@@ -21,6 +21,8 @@
     "@angular/platform-server": "^18.2.0",
     "@angular/router": "^18.2.0",
     "@angular/ssr": "^18.2.21",
+    "@aws-sdk/client-s3": "^3.1029.0",
+    "@aws-sdk/s3-request-presigner": "^3.1029.0",
     "bootstrap": "^5.3.3",
     "express": "^4.18.2",
     "rxjs": "~7.8.0",

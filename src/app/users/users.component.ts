@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { UserService, User } from '../services/user.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-users',
@@ -13,13 +13,10 @@ import { UserService, User } from '../services/user.service';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent {
-  users$!: Observable<User[]>;
+  private readonly userService = inject(UserService);
+  readonly users = toSignal(this.userService.users$, { initialValue: [] as User[] });
   editingIndex: number | null = null;
   editingUser: User | null = null;
-
-  constructor(private userService: UserService) {
-    this.users$ = this.userService.users$;
-  }
 
   startEdit(index: number, user: User): void {
     this.editingIndex = index;

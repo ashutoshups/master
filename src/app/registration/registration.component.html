@@ -21,9 +21,9 @@
                   <div class="col-12">
                     <label class="form-label">Profile photo</label>
                     <div class="profile-photo d-flex align-items-center gap-3 p-3 rounded-4 border bg-white">
-                      <div class="avatar" [class.has-image]="!!photoPreviewUrl">
-                        <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" alt="Profile photo preview" />
-                        <span *ngIf="!photoPreviewUrl" class="avatar-placeholder">Add</span>
+                      <div class="avatar" [class.has-image]="!!photoPreviewUrl()">
+                        <img *ngIf="photoPreviewUrl()" [src]="photoPreviewUrl()!" alt="Profile photo preview" />
+                        <span *ngIf="!photoPreviewUrl()" class="avatar-placeholder">Add</span>
                       </div>
                       <div class="flex-grow-1">
                         <input type="file" class="form-control" accept="image/*" (change)="onPhotoSelected($event)" />
@@ -86,22 +86,34 @@
 
                   <div class="col-md-6">
                     <label class="form-label">Password</label>
-                    <input type="password" formControlName="password" class="form-control" [class.is-invalid]="submitted && f.password.invalid" placeholder="Create a password" autocomplete="new-password" />
+                    <input
+                      type="password"
+                      formControlName="password"
+                      class="form-control"
+                      [class.is-invalid]="(submitted || f.password.touched) && (f.password.invalid || registrationForm.errors?.['passwordMismatch'])"
+                      placeholder="Create a password"
+                      autocomplete="new-password" />
                     <app-form-error
                       [control]="f.password"
-                      [show]="submitted"
+                      [show]="submitted || f.password.touched"
                       [messages]="{ required: 'Password is required.', minlength: 'Use at least 8 characters.' }" />
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Confirm password</label>
-                    <input type="password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="submitted && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])" placeholder="Re-enter password" autocomplete="new-password" />
-                    <div class="invalid-feedback" *ngIf="submitted && registrationForm.errors?.['passwordMismatch']">
+                    <input
+                      type="password"
+                      formControlName="confirmPassword"
+                      class="form-control"
+                      [class.is-invalid]="(submitted || f.confirmPassword.touched) && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])"
+                      placeholder="Re-enter password"
+                      autocomplete="new-password" />
+                    <div class="invalid-feedback" *ngIf="(submitted || f.confirmPassword.touched || f.password.touched) && registrationForm.errors?.['passwordMismatch']">
                       Passwords do not match.
                     </div>
                     <app-form-error
                       [control]="f.confirmPassword"
-                      [show]="submitted && !registrationForm.errors?.['passwordMismatch']"
+                      [show]="(submitted || f.confirmPassword.touched) && !registrationForm.errors?.['passwordMismatch']"
                       [messages]="{ required: 'Confirm your password.' }" />
                   </div>
 
@@ -120,9 +132,9 @@
                     <button
                       type="submit"
                       class="btn btn-primary btn-lg w-100 shadow-sm"
-                      [disabled]="isSubmitting || registrationForm.invalid">
-                      <span *ngIf="!isSubmitting">Create account</span>
-                      <span *ngIf="isSubmitting">Creating...</span>
+                      [disabled]="isSubmitting() || registrationForm.invalid || !!registrationForm.errors?.['passwordMismatch']">
+                      <span *ngIf="!isSubmitting()">Create account</span>
+                      <span *ngIf="isSubmitting()">Creating...</span>
                     </button>
                   </div>
                 </div>
