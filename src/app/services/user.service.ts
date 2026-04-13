@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface User {
+  profilePhotoUrl?: string | null;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
   dob: string;
-  country: string;
 }
 
 @Injectable({

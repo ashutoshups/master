@@ -47,9 +47,17 @@
                     <div class="card border rounded-3 shadow-sm">
                       <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                          <div>
-                            <h6 class="card-title mb-0">{{ user.firstName }} {{ user.lastName }}</h6>
-                            <small class="text-muted">{{ user.email }}</small>
+                          <div class="d-flex align-items-center gap-3">
+                            <div class="user-avatar">
+                              <img *ngIf="user.profilePhotoUrl" [src]="user.profilePhotoUrl" alt="Profile photo" />
+                              <span *ngIf="!user.profilePhotoUrl" class="user-avatar-fallback">
+                                {{ (user.firstName[0] || '?') + (user.lastName[0] || '') }}
+                              </span>
+                            </div>
+                            <div>
+                              <h6 class="card-title mb-0">{{ user.firstName }} {{ user.lastName }}</h6>
+                              <small class="text-muted">{{ user.email }}</small>
+                            </div>
                           </div>
                           <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn btn-outline-secondary btn-sm btn-icon btn-edit" aria-label="Edit user" (click)="startEdit(i, user)">
@@ -79,10 +87,6 @@
                             <small class="text-muted d-block">Date of Birth</small>
                             <span class="fw-medium">{{ user.dob | date:'mediumDate' }}</span>
                           </div>
-                          <div class="col-sm-6">
-                            <small class="text-muted d-block">Country</small>
-                            <span class="fw-medium">{{ user.country }}</span>
-                          </div>
                         </div>
 
                         <div *ngIf="editingIndex === i && editingUser as currentUser" class="edit-panel mt-3 p-3 rounded-3 border bg-light">
@@ -102,16 +106,6 @@
                             </div>
                             <div class="col-sm-6">
                               <input type="date" [(ngModel)]="currentUser.dob" name="editDob{{ i }}" class="form-control form-control-sm" />
-                            </div>
-                            <div class="col-sm-6">
-                              <select [(ngModel)]="currentUser.country" name="editCountry{{ i }}" class="form-select form-select-sm">
-                                <option value="" disabled>Select country</option>
-                                <option value="United States">United States</option>
-                                <option value="Canada">Canada</option>
-                                <option value="United Kingdom">United Kingdom</option>
-                                <option value="Australia">Australia</option>
-                                <option value="Other">Other</option>
-                              </select>
                             </div>
                           </div>
                           <div class="d-flex justify-content-end gap-2 mt-3">

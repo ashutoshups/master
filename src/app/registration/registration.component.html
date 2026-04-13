@@ -14,9 +14,26 @@
             <div class="col-lg-7 p-5">
               <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
                 <div class="row g-3">
+                  <div class="col-12">
+                    <div class="section-title">Account details</div>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Profile photo</label>
+                    <div class="profile-photo d-flex align-items-center gap-3 p-3 rounded-4 border bg-white">
+                      <div class="avatar" [class.has-image]="!!photoPreviewUrl">
+                        <img *ngIf="photoPreviewUrl" [src]="photoPreviewUrl" alt="Profile photo preview" />
+                        <span *ngIf="!photoPreviewUrl" class="avatar-placeholder">Add</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <input type="file" class="form-control" accept="image/*" (change)="onPhotoSelected($event)" />
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="col-md-6">
                     <label class="form-label">First name</label>
-                    <input type="text" formControlName="firstName" class="form-control" [class.is-invalid]="submitted && f.firstName.invalid" placeholder="First name" />
+                    <input type="text" formControlName="firstName" class="form-control" [class.is-invalid]="submitted && f.firstName.invalid" placeholder="First name" autocomplete="given-name" />
                     <div class="invalid-feedback" *ngIf="submitted && f.firstName.invalid">
                       {{ f.firstName.errors?.['required'] ? 'First name is required.' : '' }}
                       {{ f.firstName.errors?.['minlength'] ? 'Use at least 2 characters.' : '' }}
@@ -25,16 +42,20 @@
 
                   <div class="col-md-6">
                     <label class="form-label">Last name</label>
-                    <input type="text" formControlName="lastName" class="form-control" [class.is-invalid]="submitted && f.lastName.invalid" placeholder="Last name" />
+                    <input type="text" formControlName="lastName" class="form-control" [class.is-invalid]="submitted && f.lastName.invalid" placeholder="Last name" autocomplete="family-name" />
                     <div class="invalid-feedback" *ngIf="submitted && f.lastName.invalid">
                       {{ f.lastName.errors?.['required'] ? 'Last name is required.' : '' }}
                       {{ f.lastName.errors?.['minlength'] ? 'Use at least 2 characters.' : '' }}
                     </div>
                   </div>
 
-                  <div class="col-md-6">
+                  <div class="col-12 pt-2">
+                    <div class="section-title">Contact</div>
+                  </div>
+
+                  <div class="col-12">
                     <label class="form-label">Email address</label>
-                    <input type="email" formControlName="email" class="form-control" [class.is-invalid]="submitted && f.email.invalid" placeholder="you@example.com" />
+                    <input type="email" formControlName="email" class="form-control" [class.is-invalid]="submitted && f.email.invalid" placeholder="you@example.com" autocomplete="email" />
                     <div class="invalid-feedback" *ngIf="submitted && f.email.invalid">
                       {{ f.email.errors?.['required'] ? 'Email is required.' : '' }}
                       {{ f.email.errors?.['email'] ? 'Enter a valid email address.' : '' }}
@@ -43,51 +64,40 @@
 
                   <div class="col-md-6">
                     <label class="form-label">Phone number</label>
-                    <input type="tel" formControlName="phone" class="form-control" [class.is-invalid]="submitted && f.phone.invalid" placeholder="(555) 123-4567" />
+                    <input type="tel" formControlName="phone" class="form-control" [class.is-invalid]="submitted && f.phone.invalid" placeholder="(555) 123-4567" autocomplete="tel" />
                     <div class="invalid-feedback" *ngIf="submitted && f.phone.invalid">
                       {{ f.phone.errors?.['required'] ? 'Phone number is required.' : '' }}
                       {{ f.phone.errors?.['pattern'] ? 'Use digits, spaces, +, -, or parentheses.' : '' }}
                     </div>
                   </div>
 
-                  <div class="col-12">
+                  <div class="col-md-6">
+                    <label class="form-label">Date of birth</label>
+                    <input type="date" formControlName="dob" class="form-control" [class.is-invalid]="submitted && f.dob.invalid" autocomplete="bday" />
+                    <div class="invalid-feedback" *ngIf="submitted && f.dob.invalid">
+                      Date of birth is required.
+                    </div>
+                  </div>
+
+                  <div class="col-12 pt-2">
+                    <div class="section-title">Security</div>
+                  </div>
+
+                  <div class="col-md-6">
                     <label class="form-label">Password</label>
-                    <input type="password" formControlName="password" class="form-control" [class.is-invalid]="submitted && f.password.invalid" placeholder="Password" />
+                    <input type="password" formControlName="password" class="form-control" [class.is-invalid]="submitted && f.password.invalid" placeholder="Create a password" autocomplete="new-password" />
                     <div class="invalid-feedback" *ngIf="submitted && f.password.invalid">
                       {{ f.password.errors?.['required'] ? 'Password is required.' : '' }}
                       {{ f.password.errors?.['minlength'] ? 'Use at least 8 characters.' : '' }}
                     </div>
                   </div>
 
-                  <div class="col-12">
+                  <div class="col-md-6">
                     <label class="form-label">Confirm password</label>
-                    <input type="password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="submitted && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])" placeholder="Confirm password" />
+                    <input type="password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="submitted && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])" placeholder="Re-enter password" autocomplete="new-password" />
                     <div class="invalid-feedback" *ngIf="submitted && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])">
                       {{ f.confirmPassword.errors?.['required'] ? 'Confirm your password.' : '' }}
                       {{ registrationForm.errors?.['passwordMismatch'] ? 'Passwords do not match.' : '' }}
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">Date of birth</label>
-                    <input type="date" formControlName="dob" class="form-control" [class.is-invalid]="submitted && f.dob.invalid" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.dob.invalid">
-                      Date of birth is required.
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">Country</label>
-                    <select formControlName="country" class="form-select" [class.is-invalid]="submitted && f.country.invalid">
-                      <option value="" disabled selected>Select country</option>
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                      <option value="Australia">Australia</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <div class="invalid-feedback" *ngIf="submitted && f.country.invalid">
-                      Country selection is required.
                     </div>
                   </div>
 
@@ -112,7 +122,6 @@
                 <p class="mb-1"><strong>Name:</strong> {{ registrationForm.value.firstName }} {{ registrationForm.value.lastName }}</p>
                 <p class="mb-1"><strong>Email:</strong> {{ registrationForm.value.email }}</p>
                 <p class="mb-1"><strong>Phone:</strong> {{ registrationForm.value.phone }}</p>
-                <p class="mb-0"><strong>Country:</strong> {{ registrationForm.value.country }}</p>
               </div>
             </div>
           </div>

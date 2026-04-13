@@ -14,6 +14,7 @@ export class RegistrationComponent {
   registrationForm!: FormGroup;
 
   submitted = false;
+  photoPreviewUrl: string | null = null;
 
   get f(): any {
     return this.registrationForm.controls;
@@ -22,6 +23,7 @@ export class RegistrationComponent {
   constructor(private fb: FormBuilder, private userService: UserService) {
     this.registrationForm = this.fb.group(
       {
+        profilePhoto: [null],
         firstName: ['', [Validators.required, Validators.minLength(2)]],
         lastName: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
@@ -29,7 +31,6 @@ export class RegistrationComponent {
         confirmPassword: ['', Validators.required],
         phone: ['', [Validators.required, Validators.pattern(/^[0-9\-\+\s()]+$/)]],
         dob: ['', Validators.required],
-        country: ['', Validators.required],
         acceptTerms: [false, Validators.requiredTrue]
       },
       { validators: this.passwordsMatch }
@@ -49,8 +50,10 @@ export class RegistrationComponent {
 
     if (this.registrationForm.valid) {
       const payload = { ...this.registrationForm.value };
+      delete payload.profilePhoto;
       delete payload.confirmPassword;
       delete payload.acceptTerms;
+      payload.profilePhotoUrl = this.photoPreviewUrl;
 
       // Add user to service
       this.userService.addUser(payload as User);
@@ -58,7 +61,31 @@ export class RegistrationComponent {
       console.log('Registration submitted', payload);
       alert('Registration successful!');
       this.registrationForm.reset();
+      this.photoPreviewUrl = null;
       this.submitted = false;
     }
+  }
+
+  onPhotoSelected(event: Event) {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0] ?? null;
+    this.registrationForm.patchValue({ profilePhoto: file });
+    this.registrationForm.get('profilePhoto')?.markAsDirty();
+
+    if (!file) {
+      this.photoPreviewUrl = null;
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.photoPreviewUrl = null;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.photoPreviewUrl = typeof reader.result === 'string' ? reader.result : null;
+    };
+    reader.readAsDataURL(file);
   }
 }

@@ -60,13 +60,38 @@ html {
 .btn-icon svg {
   width: 12px;
   height: 12px;
-  margin: 0;
+  margin: 3px;
 }
 
 .card-body .btn-outline-danger {
-  min-width: 34px;
+  min-width: 32px;
 }
 
 .card-body .btn-outline-danger svg {
   margin-right: 0.3rem;
+}
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(22, 163, 74, 0.08);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-fallback {
+  font-weight: 700;
+  color: rgba(21, 128, 61, 0.95);
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
 }
