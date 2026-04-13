@@ -11,13 +11,12 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 const DEFAULT_AWS_REGION = 'ap-south-1';
 const DEFAULT_S3_BUCKET_NAME = 'my-from-profile-bucket';
 
-//aws access key details - AKIAURLDDRJCWGMUUWPP
-//secret - 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
+//AKIAURLDDRJCWGMUUWPP
+//AmsaxpZg+lhhJGr5/pQNsVieT8BIhSGS8+FnnHU0
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
-  const server = express();
-  const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+  const server = express();const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
 
