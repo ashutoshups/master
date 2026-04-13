@@ -51,7 +51,7 @@
                             <div class="user-avatar">
                               <img *ngIf="user.profilePhotoUrl" [src]="user.profilePhotoUrl" alt="Profile photo" />
                               <span *ngIf="!user.profilePhotoUrl" class="user-avatar-fallback">
-                                {{ (user.firstName[0] || '?') + (user.lastName[0] || '') }}
+                                {{ initials(user) }}
                               </span>
                             </div>
                             <div>

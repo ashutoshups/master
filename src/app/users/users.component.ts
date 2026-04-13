@@ -52,6 +52,12 @@ export class UsersComponent {
     }
   }
 
+  initials(user: User): string {
+    const first = user.firstName.trim().charAt(0) || '?';
+    const last = user.lastName.trim().charAt(0) || '';
+    return (first + last).toUpperCase();
+  }
+
   trackByUser(index: number, user: User): string {
     return user.email;
   }

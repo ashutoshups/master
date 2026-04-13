@@ -12,7 +12,7 @@
               <p class="mb-0 text-white-75">Securely create your account with our intuitive registration form. Experience a smooth and reliable onboarding process designed for your convenience.</p>
             </div>
             <div class="col-lg-7 p-5">
-              <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
+              <form #registrationFormEl [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
                 <div class="row g-3">
                   <div class="col-12">
                     <div class="section-title">Account details</div>
@@ -34,19 +34,19 @@
                   <div class="col-md-6">
                     <label class="form-label">First name</label>
                     <input type="text" formControlName="firstName" class="form-control" [class.is-invalid]="submitted && f.firstName.invalid" placeholder="First name" autocomplete="given-name" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.firstName.invalid">
-                      {{ f.firstName.errors?.['required'] ? 'First name is required.' : '' }}
-                      {{ f.firstName.errors?.['minlength'] ? 'Use at least 2 characters.' : '' }}
-                    </div>
+                    <app-form-error
+                      [control]="f.firstName"
+                      [show]="submitted"
+                      [messages]="{ required: 'First name is required.', minlength: 'Use at least 2 characters.' }" />
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Last name</label>
                     <input type="text" formControlName="lastName" class="form-control" [class.is-invalid]="submitted && f.lastName.invalid" placeholder="Last name" autocomplete="family-name" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.lastName.invalid">
-                      {{ f.lastName.errors?.['required'] ? 'Last name is required.' : '' }}
-                      {{ f.lastName.errors?.['minlength'] ? 'Use at least 2 characters.' : '' }}
-                    </div>
+                    <app-form-error
+                      [control]="f.lastName"
+                      [show]="submitted"
+                      [messages]="{ required: 'Last name is required.', minlength: 'Use at least 2 characters.' }" />
                   </div>
 
                   <div class="col-12 pt-2">
@@ -56,27 +56,28 @@
                   <div class="col-12">
                     <label class="form-label">Email address</label>
                     <input type="email" formControlName="email" class="form-control" [class.is-invalid]="submitted && f.email.invalid" placeholder="you@example.com" autocomplete="email" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.email.invalid">
-                      {{ f.email.errors?.['required'] ? 'Email is required.' : '' }}
-                      {{ f.email.errors?.['email'] ? 'Enter a valid email address.' : '' }}
-                    </div>
+                    <app-form-error
+                      [control]="f.email"
+                      [show]="submitted"
+                      [messages]="{ required: 'Email is required.', email: 'Enter a valid email address.' }" />
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Phone number</label>
                     <input type="tel" formControlName="phone" class="form-control" [class.is-invalid]="submitted && f.phone.invalid" placeholder="(555) 123-4567" autocomplete="tel" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.phone.invalid">
-                      {{ f.phone.errors?.['required'] ? 'Phone number is required.' : '' }}
-                      {{ f.phone.errors?.['pattern'] ? 'Use digits, spaces, +, -, or parentheses.' : '' }}
-                    </div>
+                    <app-form-error
+                      [control]="f.phone"
+                      [show]="submitted"
+                      [messages]="{ required: 'Phone number is required.', pattern: 'Use digits, spaces, +, -, or parentheses.' }" />
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Date of birth</label>
                     <input type="date" formControlName="dob" class="form-control" [class.is-invalid]="submitted && f.dob.invalid" autocomplete="bday" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.dob.invalid">
-                      Date of birth is required.
-                    </div>
+                    <app-form-error
+                      [control]="f.dob"
+                      [show]="submitted"
+                      [messages]="{ required: 'Date of birth is required.' }" />
                   </div>
 
                   <div class="col-12 pt-2">
@@ -86,33 +87,43 @@
                   <div class="col-md-6">
                     <label class="form-label">Password</label>
                     <input type="password" formControlName="password" class="form-control" [class.is-invalid]="submitted && f.password.invalid" placeholder="Create a password" autocomplete="new-password" />
-                    <div class="invalid-feedback" *ngIf="submitted && f.password.invalid">
-                      {{ f.password.errors?.['required'] ? 'Password is required.' : '' }}
-                      {{ f.password.errors?.['minlength'] ? 'Use at least 8 characters.' : '' }}
-                    </div>
+                    <app-form-error
+                      [control]="f.password"
+                      [show]="submitted"
+                      [messages]="{ required: 'Password is required.', minlength: 'Use at least 8 characters.' }" />
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Confirm password</label>
                     <input type="password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="submitted && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])" placeholder="Re-enter password" autocomplete="new-password" />
-                    <div class="invalid-feedback" *ngIf="submitted && (f.confirmPassword.invalid || registrationForm.errors?.['passwordMismatch'])">
-                      {{ f.confirmPassword.errors?.['required'] ? 'Confirm your password.' : '' }}
-                      {{ registrationForm.errors?.['passwordMismatch'] ? 'Passwords do not match.' : '' }}
+                    <div class="invalid-feedback" *ngIf="submitted && registrationForm.errors?.['passwordMismatch']">
+                      Passwords do not match.
                     </div>
+                    <app-form-error
+                      [control]="f.confirmPassword"
+                      [show]="submitted && !registrationForm.errors?.['passwordMismatch']"
+                      [messages]="{ required: 'Confirm your password.' }" />
                   </div>
 
                   <div class="col-12">
                     <div class="form-check">
                       <input type="checkbox" class="form-check-input" id="acceptTerms" formControlName="acceptTerms" [class.is-invalid]="submitted && f.acceptTerms.invalid" />
                       <label class="form-check-label" for="acceptTerms">I agree to the terms and conditions.</label>
-                      <div class="invalid-feedback d-block" *ngIf="submitted && f.acceptTerms.invalid">
-                        You must accept the terms.
-                      </div>
+                      <app-form-error
+                        [control]="f.acceptTerms"
+                        [show]="submitted"
+                        [messages]="{ required: 'You must accept the terms.', requiredTrue: 'You must accept the terms.' }" />
                     </div>
                   </div>
 
                   <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">Create account</button>
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-lg w-100 shadow-sm"
+                      [disabled]="isSubmitting || registrationForm.invalid">
+                      <span *ngIf="!isSubmitting">Create account</span>
+                      <span *ngIf="isSubmitting">Creating...</span>
+                    </button>
                   </div>
                 </div>
               </form>
