@@ -80,7 +80,8 @@ export class RegistrationComponent {
       try {
         const { firstName, lastName, email, phone, dob, profilePhoto } = this.registrationForm.getRawValue();
 
-        let profilePhotoUrl: string | null = this.photoPreviewUrl();
+        // Never persist the local preview (data URL). Only persist the S3 URL after a successful upload.
+        let profilePhotoUrl: string | null = null;
         let profilePhotoKey: string | null = null;
 
         if (profilePhoto) {

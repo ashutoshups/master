@@ -26,6 +26,10 @@ export function app(): express.Express {
 
   server.post('/api/s3/presign-put', async (req, res) => {
     try {
+      // Never allow caching of presigned URLs (they expire quickly and cached responses cause "Request has expired").
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('Pragma', 'no-cache');
+
       const region = process.env['AWS_REGION'] ?? DEFAULT_AWS_REGION;
       const bucket = process.env['S3_BUCKET_NAME'] ?? DEFAULT_S3_BUCKET_NAME;
       if (!region || !bucket) {
@@ -45,20 +49,45 @@ export function app(): express.Express {
       const safeName = fileNameRaw.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
       const key = `profile-photos/${new Date().toISOString().slice(0, 10)}/${randomUUID()}-${safeName}`;
 
-      const s3 = new S3Client({ region });
+      // For browser uploads via presigned PUT, avoid adding optional checksum requirements
+      // (those appear as x-amz-checksum-* query params and can cause 403s when the browser
+      // doesn't provide matching checksum headers/payload).
+      const s3 = new S3Client({ region, requestChecksumCalculation: 'WHEN_REQUIRED' });
       const command = new PutObjectCommand({
         Bucket: bucket,
         Key: key,
         ContentType: contentType
       });
 
-      const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+      // 60s is often too short in dev (refreshes, retries, debugger pauses, slow networks).
+      // Use a slightly longer window while testing.
+      const url = await getSignedUrl(s3, command, { expiresIn: 300 });
       const publicUrl = `https://${bucket}.s3.${region}.amazonaws.com/${encodeURIComponent(key).replace(/%2F/g, '/')}`;
 
       return res.json({ url, key, publicUrl });
     } catch (err) {
-      console.error('Error generating presigned S3 URL:', err);
-      return res.status(500).json({ message: 'Failed to generate presigned URL.' });
+      const e = err as any;
+      const httpStatusCode = e?.$metadata?.httpStatusCode;
+      const requestId = e?.$metadata?.requestId;
+      const extendedRequestId = e?.$metadata?.extendedRequestId;
+      const code = e?.name ?? e?.Code ?? 'UnknownError';
+      const message = typeof e?.message === 'string' ? e.message : 'Failed to generate presigned URL.';
+
+      console.error('Error generating presigned S3 URL:', {
+        code,
+        message,
+        httpStatusCode,
+        requestId,
+        extendedRequestId
+      });
+
+      // Safe for the frontend; doesn't expose credentials.
+      return res.status(500).json({
+        message,
+        code,
+        requestId,
+        extendedRequestId
+      });
     }
   });
 
