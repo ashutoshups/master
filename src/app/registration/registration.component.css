@@ -1,16 +1,30 @@
 .page-shell {
   min-height: 100vh;
-  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.15), transparent 32%),
-    #f8fafc;
+  background: radial-gradient(circle at top left, rgba(59, 91, 204, 0.12), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(2, 132, 199, 0.10), transparent 38%),
+    var(--app-bg);
 }
 
 .badge.custom-badge {
   letter-spacing: 0.18em;
 }
 
+.registration-hero {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(245, 158, 11, 0.10), transparent 52%),
+    radial-gradient(circle at 90% 80%, rgba(15, 118, 110, 0.08), transparent 56%),
+    linear-gradient(180deg, #fffaf2 0%, #f3f4f6 100%);
+  border-right: 1px solid var(--app-border);
+}
+
+.registration-hero-badge {
+  background: rgba(15, 118, 110, 0.10);
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  color: rgba(15, 23, 42, 0.75);
+}
+
 .card.bg-primary {
-  background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%);
+  background: linear-gradient(180deg, var(--app-primary) 0%, var(--app-primary-600) 100%);
 }
 
 .invalid-feedback {
@@ -25,8 +39,8 @@
   width: 64px;
   height: 64px;
   border-radius: 999px;
-  background: rgba(79, 70, 229, 0.08);
-  border: 1px dashed rgba(79, 70, 229, 0.35);
+  background: var(--app-primary-soft);
+  border: 1px dashed rgba(59, 91, 204, 0.35);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -47,7 +61,7 @@
 
 .avatar-placeholder {
   font-weight: 700;
-  color: rgba(79, 70, 229, 0.9);
+  color: rgba(59, 91, 204, 0.92);
   letter-spacing: 0.04em;
   font-size: 0.9rem;
 }

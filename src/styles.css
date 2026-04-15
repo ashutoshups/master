@@ -4,12 +4,43 @@
   /* Prefer Inter if available; fall back to system fonts */
   --bs-font-sans-serif: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 
+  /* Subtle, professional palette */
+  --app-bg: #f6f7fb;
+  --app-surface: #ffffff;
+  --app-surface-2: #f1f5f9;
+  --app-text: #0f172a;
+  --app-text-muted: #475569;
+  --app-border: rgba(15, 23, 42, 0.12);
+
+  /* Brand (restrained) */
+  --app-primary: #0f766e; /* calm teal */
+  --app-primary-600: #0b5f59;
+  --app-primary-soft: rgba(15, 118, 110, 0.12);
+
   /* Comfortable, readable defaults */
   --bs-body-font-size: 1rem; /* 16px */
   --bs-body-line-height: 1.5;
 
   /* Slightly tighter headings than Bootstrap default */
   --bs-heading-line-height: 1.2;
+
+  /* Bootstrap theme alignment */
+  --bs-body-bg: var(--app-bg);
+  --bs-body-color: var(--app-text);
+  --bs-secondary-color: var(--app-text-muted);
+  --bs-border-color: var(--app-border);
+  --bs-link-color: var(--app-primary);
+  --bs-link-hover-color: var(--app-primary-600);
+  --bs-primary: var(--app-primary);
+
+  /* Restrained semantic colors */
+  --bs-success: #177a47;
+  --bs-danger: #b23a48;
+  --bs-warning: #a16207;
+
+  /* Consistent radii */
+  --app-radius-sm: 10px;
+  --app-radius-md: 14px;
 }
 
 html,
@@ -22,6 +53,72 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+/* A consistent “app shell” background if used */
+.page-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(59, 91, 204, 0.10), transparent 34%),
+    radial-gradient(circle at 80% 90%, rgba(2, 132, 199, 0.08), transparent 36%),
+    var(--app-bg);
+}
+
+/* Softer cards and surfaces */
+.card {
+  border-color: var(--app-border);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  border-radius: var(--app-radius-md);
+}
+
+.nav-tabs {
+  border-bottom-color: var(--app-border);
+}
+
+/* Buttons: calmer, consistent, and “app-like” */
+.btn {
+  border-radius: var(--app-radius-sm);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--app-primary);
+  --bs-btn-border-color: rgba(15, 118, 110, 0.55);
+  --bs-btn-hover-bg: var(--app-primary-600);
+  --bs-btn-hover-border-color: rgba(11, 95, 89, 0.6);
+  --bs-btn-active-bg: var(--app-primary-600);
+  --bs-btn-active-border-color: rgba(11, 95, 89, 0.65);
+  --bs-btn-focus-shadow-rgb: 15, 118, 110;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--app-primary);
+  --bs-btn-border-color: rgba(15, 118, 110, 0.45);
+  --bs-btn-hover-bg: rgba(15, 118, 110, 0.10);
+  --bs-btn-hover-border-color: rgba(15, 118, 110, 0.55);
+  --bs-btn-active-bg: rgba(15, 118, 110, 0.14);
+  --bs-btn-active-border-color: rgba(15, 118, 110, 0.65);
+  --bs-btn-focus-shadow-rgb: 15, 118, 110;
+}
+
+/* Form controls: subtle focus ring + consistent borders */
+.form-control,
+.form-select {
+  border-color: var(--app-border);
+  border-radius: var(--app-radius-sm);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: rgba(15, 118, 110, 0.55);
+  box-shadow: 0 0 0 0.2rem rgba(15, 118, 110, 0.16);
+}
+
+/* Headings: slightly tighter + calmer color */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--app-text);
+  letter-spacing: -0.01em;
 }
 
 /* Make labels/help text feel intentionally sized */

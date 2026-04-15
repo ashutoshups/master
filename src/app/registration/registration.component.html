@@ -3,13 +3,13 @@
     <div class="row justify-content-center">
       <div class="col-xl-8 col-lg-10">
         <div class="card border-0 shadow-lg overflow-hidden">
-          <div class="row g-0 align-items-stretch">
-            <div class="col-lg-5 bg-primary text-white p-5 d-flex flex-column justify-content-center">
+            <div class="row g-0 align-items-stretch">
+            <div class="col-lg-5 registration-hero text-dark p-5 d-flex flex-column justify-content-center">
               <div class="mb-4">
-                <span class="badge custom-badge bg-white bg-opacity-10 text-uppercase fw-semibold mb-3">Secure onboarding</span>
+                <span class="badge custom-badge registration-hero-badge text-uppercase fw-semibold mb-3">Secure onboarding</span>
                 <h2 class="fw-bold">Modern Registration</h2>
               </div>
-              <p class="mb-0 text-white-75">Securely create your account with our intuitive registration form. Experience a smooth and reliable onboarding process designed for your convenience.</p>
+              <p class="mb-0 text-muted">Securely create your account with our intuitive registration form. Experience a smooth and reliable onboarding process designed for your convenience.</p>
             </div>
             <div class="col-lg-7 p-5">
               <form #registrationFormEl [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
