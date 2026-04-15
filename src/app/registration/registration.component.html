@@ -77,7 +77,7 @@
                     <app-form-error
                       [control]="f.dob"
                       [show]="submitted"
-                      [messages]="{ required: 'Date of birth is required.' }" />
+                      [messages]="{ required: 'Date of birth is required.', dobYearLength: 'Year must be exactly 4 digits.', dobFormat: 'Enter a valid date (YYYY-MM-DD).' }" />
                   </div>
 
                   <div class="col-12 pt-2">

@@ -50,7 +50,7 @@ export class RegistrationComponent {
         password: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(8)]),
         confirmPassword: this.fb.nonNullable.control('', [Validators.required]),
         phone: this.fb.nonNullable.control('', [Validators.required, Validators.pattern(/^[0-9\-\+\s()]+$/)]),
-        dob: this.fb.nonNullable.control('', [Validators.required]),
+        dob: this.fb.nonNullable.control('', [Validators.required, RegistrationComponent.dobYear4Digits]),
         acceptTerms: this.fb.nonNullable.control(false, [Validators.requiredTrue])
       },
       { validators: [RegistrationComponent.passwordsMatch] }
@@ -62,6 +62,25 @@ export class RegistrationComponent {
     const confirmPassword = control.get('confirmPassword')?.value as string | null | undefined;
     if (!password || !confirmPassword) return null;
     return password !== confirmPassword ? { passwordMismatch: true } : null;
+  }
+
+  static dobYear4Digits(control: AbstractControl): ValidationErrors | null {
+    const raw = String(control.value ?? '').trim();
+    if (!raw) return null;
+
+    // Expect the value from <input type="date"> to be YYYY-MM-DD.
+    // Some browsers allow manual typing; enforce 4-digit year.
+    const match = /^(\d+)-(\d{2})-(\d{2})$/.exec(raw);
+    if (!match) {
+      return { dobFormat: true };
+    }
+
+    const year = match[1];
+    if (year.length !== 4) {
+      return { dobYearLength: true };
+    }
+
+    return null;
   }
 
   async onSubmit() {

@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import 'dotenv/config';
 
@@ -55,10 +55,13 @@ export function app(): express.Express {
       // (those appear as x-amz-checksum-* query params and can cause 403s when the browser
       // doesn't provide matching checksum headers/payload).
       const s3 = new S3Client({ region, requestChecksumCalculation: 'WHEN_REQUIRED' });
+      const creds =
+        typeof s3.config.credentials === 'function'
+          ? await s3.config.credentials()
+          : await Promise.resolve(s3.config.credentials);
       const command = new PutObjectCommand({
         Bucket: bucket,
         Key: key,
-        ContentType: contentType
       });
 
       // 60s is often too short in dev (refreshes, retries, debugger pauses, slow networks).
@@ -66,7 +69,21 @@ export function app(): express.Express {
       const url = await getSignedUrl(s3, command, { expiresIn: 300 });
       const publicUrl = `https://${bucket}.s3.${region}.amazonaws.com/${encodeURIComponent(key).replace(/%2F/g, '/')}`;
 
-      return res.json({ url, key, publicUrl });
+      const accessKeyId = creds?.accessKeyId ? String(creds.accessKeyId) : '';
+      const debugAccessKeyId =
+        accessKeyId.length <= 8 ? accessKeyId : `${accessKeyId.slice(0, 4)}…${accessKeyId.slice(-4)}`;
+
+      return res.json({
+        url,
+        key,
+        publicUrl,
+        debug: {
+          region,
+          bucket,
+          accessKeyId: debugAccessKeyId,
+          hasSessionToken: Boolean(creds?.sessionToken)
+        }
+      });
     } catch (err) {
       const e = err as any;
       const httpStatusCode = e?.$metadata?.httpStatusCode;
@@ -90,6 +107,41 @@ export function app(): express.Express {
         requestId,
         extendedRequestId
       });
+    }
+  });
+
+  // Use a regex route so this endpoint still works even if the client accidentally
+  // calls it as a relative URL (e.g. `/users/api/s3/presign-get`).
+  server.get(/\/api\/s3\/presign-get$/, async (req, res) => {
+    try {
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('Pragma', 'no-cache');
+
+      const region = process.env['AWS_REGION'] ?? DEFAULT_AWS_REGION;
+      const bucket = process.env['S3_BUCKET_NAME'] ?? DEFAULT_S3_BUCKET_NAME;
+      if (!region || !bucket) {
+        return res.status(500).json({ message: 'Missing AWS_REGION or S3_BUCKET_NAME env vars.' });
+      }
+
+      const keyParam = (req.query as Record<string, unknown>)['key'];
+      const key = (Array.isArray(keyParam) ? keyParam[0] : keyParam) ? String(Array.isArray(keyParam) ? keyParam[0] : keyParam).trim() : '';
+      if (!key) {
+        return res.status(400).json({ message: 'key is required.' });
+      }
+      if (!key.startsWith('profile-photos/')) {
+        return res.status(400).json({ message: 'Invalid key.' });
+      }
+
+      const s3 = new S3Client({ region });
+      const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+      const url = await getSignedUrl(s3, command, { expiresIn: 300 });
+      return res.json({ url });
+    } catch (err) {
+      const e = err as any;
+      const code = e?.name ?? e?.Code ?? 'UnknownError';
+      const message = typeof e?.message === 'string' ? e.message : 'Failed to generate presigned GET URL.';
+      console.error('Error generating presigned S3 GET URL:', { code, message });
+      return res.status(500).json({ message, code });
     }
   });
 

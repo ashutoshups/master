@@ -8,6 +8,10 @@ type PresignPutResponse = {
   publicUrl: string;
 };
 
+type PresignGetResponse = {
+  url: string;
+};
+
 @Injectable({ providedIn: 'root' })
 export class S3UploadService {
   private readonly http = inject(HttpClient);
@@ -26,9 +30,6 @@ export class S3UploadService {
       try {
         putRes = await fetch(presign.url, {
           method: 'PUT',
-          headers: {
-            'Content-Type': file.type || 'image/jpeg'  // Ensure Content-Type matches backend pre-sign generation
-          },
           body: file
         });
       } catch (e) {
@@ -51,5 +52,12 @@ export class S3UploadService {
       const message = e instanceof Error ? e.message : String(e);
       throw new Error(message);
     }
+  }
+
+  async getSignedReadUrl(key: string): Promise<string> {
+    const res = await firstValueFrom(
+      this.http.get<PresignGetResponse>('/api/s3/presign-get', { params: { key } })
+    );
+    return res.url;
   }
 }

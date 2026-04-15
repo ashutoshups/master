@@ -1,17 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global typography + Bootstrap variable overrides */
 
 :root {
-  font-family: 'Roboto', Arial, sans-serif;
+  /* Prefer Inter if available; fall back to system fonts */
+  --bs-font-sans-serif: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Comfortable, readable defaults */
+  --bs-body-font-size: 1rem; /* 16px */
+  --bs-body-line-height: 1.5;
+
+  /* Slightly tighter headings than Bootstrap default */
+  --bs-heading-line-height: 1.2;
 }
 
 html,
 body {
   margin: 0;
   min-height: 100%;
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: var(--bs-font-sans-serif);
+  font-size: var(--bs-body-font-size);
+  line-height: var(--bs-body-line-height);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  font-family: inherit;
+/* Make labels/help text feel intentionally sized */
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.invalid-feedback {
+  font-size: 0.875rem;
+}
+
+/* Match Bootstrap’s modern control feel */
+.form-control,
+.form-select {
+  font-size: 0.95rem;
+  line-height: 1.35;
 }
 
