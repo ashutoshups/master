@@ -7,13 +7,15 @@ import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import 'dotenv/config';
 
 const DEFAULT_AWS_REGION = 'ap-south-1';
 const DEFAULT_S3_BUCKET_NAME = 'my-from-profile-bucket';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
-  const server = express();const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+  const server = express();
+  const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
 
@@ -45,7 +47,7 @@ export function app(): express.Express {
       if (!contentType.startsWith('image/')) {
         return res.status(400).json({ message: 'Only image uploads are supported.' });
       }
-
+      console.log(fileNameRaw, contentType);
       const safeName = fileNameRaw.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
       const key = `profile-photos/${new Date().toISOString().slice(0, 10)}/${randomUUID()}-${safeName}`;
 

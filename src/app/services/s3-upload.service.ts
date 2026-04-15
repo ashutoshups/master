@@ -17,22 +17,22 @@ export class S3UploadService {
       const presign = await firstValueFrom(
         this.http.post<PresignPutResponse>('/api/s3/presign-put', {
           fileName: file.name,
-          contentType: file.type
+          contentType: file.type || 'image/jpeg' // Ensure correct content-type
         })
       );
+      console.log('presign >>>>> ', presign);
 
       let putRes: Response;
       try {
         putRes = await fetch(presign.url, {
           method: 'PUT',
           headers: {
-            'Content-Type': file.type
+            'Content-Type': file.type || 'image/jpeg'  // Ensure Content-Type matches backend pre-sign generation
           },
           body: file
         });
       } catch (e) {
-        // Network / CORS failures usually throw here with a generic "Failed to fetch"
-        throw new Error(`S3 upload request failed (network/CORS). ${String(e)}`);
+        throw new Error(`S3 upload request failed (network/CORS). ${e instanceof Error ? e.message : e}`);
       }
 
       if (!putRes.ok) {
@@ -48,10 +48,8 @@ export class S3UploadService {
 
       return { key: presign.key, url: presign.publicUrl };
     } catch (e) {
-      // Keep a single error boundary so the component gets a meaningful message.
       const message = e instanceof Error ? e.message : String(e);
       throw new Error(message);
     }
   }
 }
-
